@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dove - Diagnóstico AI de Piel</title>
+    
+    <!-- Google Fonts - Tipografía limpia sans-serif -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+           VARIABLES CSS - PALETA DOVE
+           ============================================ */
+        :root {
+            --dove-white: #FFFFFF;
+            --dove-blue: #00497E;
+            --dove-blue-hover: #003a65;
+            --dove-gray: #F0F0F0;
+            --dove-gray-dark: #E0E0E0;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --text-muted: #999999;
+        }
+
+        /* ============================================
+           RESET Y BASE
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: transparent;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ============================================
+           CONTENEDOR PRINCIPAL DEL BANNER
+           ============================================ */
+        .banner-container {
+            width: 300px;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+            background: var(--dove-white);
+            border-radius: 12px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        /* ============================================
+           ESTADOS - SISTEMA DE TRANSICIONES
+           ============================================ */
+        .state {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .state.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ============================================
+           ESTADO 1: INTRO CON VIDEO
+           ============================================ */
+        .state-intro {
+            background: #000;
+        }
+
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Placeholder para video (mientras no hay archivo real) */
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                180deg,
+                #f8e1d4 0%,
+                #f5d4c6 30%,
+                #e8c4b8 60%,
+                #d4a99a 100%
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 0.8; }
+        }
+
+        /* Overlay degradado para legibilidad */
+        .intro-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70%;
+            background: linear-gradient(
+                to top,
+                rgba(0, 0, 0, 0.85) 0%,
+                rgba(0, 0, 0, 0.5) 40%,
+                transparent 100%
+            );
+            pointer-events: none;
+        }
+
+        /* Contenido del Intro */
+        .intro-content {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .intro-tagline {
+            color: var(--dove-white);
+            font-size: 26px;
+            font-weight: 300;
+            line-height: 1.3;
+            margin-bottom: 24px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .intro-tagline strong {
+            font-weight: 600;
+        }
+
+        /* CTA Principal */
+        .btn-primary {
+            background: var(--dove-blue);
+            color: var(--dove-white);
+            border: none;
+            padding: 16px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 73, 126, 0.4);
+            text-transform: none;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary:hover {
+            background: var(--dove-blue-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 73, 126, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Footer Intro */
+        .intro-footer {
+            position: relative;
+            z-index: 2;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .powered-by {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        /* ============================================
+           ESTADO 2: INTERACCIÓN / APP
+           ============================================ */
+        .state-app {
+            background: var(--dove-white);
+        }
+
+        /* Header App */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--dove-gray);
+        }
+
+        .dove-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dove-blue);
+            letter-spacing: -0.5px;
+        }
+
+        .dove-logo span {
+            font-weight: 300;
+        }
+
+        .btn-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--dove-gray);
+            color: var(--text-light);
+            font-size: 18px;
+            font-weight: 300;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: inherit;
+        }
+
+        .btn-close:hover {
+            background: var(--dove-gray-dark);
+            color: var(--text-dark);
+        }
+
+        /* Contenido App */
+        .app-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            gap: 20px;
+        }
+
+        .app-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .app-subtitle {
+            font-size: 14px;
+            color: var(--text-light);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* Botones de Acción */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 18px 24px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-action-primary {
+            background: var(--dove-blue);
+            color: var(--dove-white);
+            box-shadow: 0 4px 12px rgba(0, 73, 126, 0.3);
+        }
+
+        .btn-action-primary:hover {
+            background: var(--dove-blue-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 73, 126, 0.4);
+        }
+
+        .btn-action-secondary {
+            background: var(--dove-gray);
+            color: var(--text-dark);
+            border: 2px solid var(--dove-gray-dark);
+        }
+
+        .btn-action-secondary:hover {
+            background: var(--dove-gray-dark);
+            border-color: #ccc;
+        }
+
+        .btn-icon {
+            font-size: 20px;
+        }
+
+        /* Separador */
+        .separator {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--dove-gray-dark);
+        }
+
+        /* Footer App */
+        .app-footer {
+            padding: 16px 24px;
+            text-align: center;
+            border-top: 1px solid var(--dove-gray);
+        }
+
+        .legal-text {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           OVERLAY DE ESCANEO
+           ============================================ */
+        .scanning-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 73, 126, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            z-index: 10;
+        }
+
+        .scanning-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scanning-animation {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+
+        .scanning-animation::before,
+        .scanning-animation::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--dove-white);
+        }
+
+        .scanning-animation::before {
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        .scanning-animation::after {
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .scanning-text {
+            color: var(--dove-white);
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .scanning-dots::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0% { content: ''; }
+            25% { content: '.'; }
+            50% { content: '..'; }
+            75% { content: '...'; }
+            100% { content: ''; }
+        }
+
+        /* ============================================
+           ESTADO 3: RESULTADOS
+           ============================================ */
+        .state-results {
+            background: var(--dove-white);
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, var(--dove-blue) 0%, #005a96 100%);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .results-header h2 {
+            color: var(--dove-white);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .results-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            gap: 20px;
+        }
+
+        /* Diagnóstico */
+        .diagnosis-card {
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid rgba(0, 73, 126, 0.1);
+        }
+
+        .diagnosis-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            animation: droplet 2s ease-in-out infinite;
+        }
+
+        @keyframes droplet {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .diagnosis-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .diagnosis-result {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dove-blue);
+            line-height: 1.4;
+        }
+
+        /* Producto Hero */
+        .product-card {
+            background: var(--dove-gray);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 100px;
+            background: var(--dove-white);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-badge {
+            display: inline-block;
+            background: var(--dove-blue);
+            color: var(--dove-white);
+            font-size: 9px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .product-description {
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        /* CTA Final */
+        .results-cta {
+            padding: 0 24px 24px;
+        }
+
+        .btn-buy {
+            width: 100%;
+            background: linear-gradient(135deg, var(--dove-blue) 0%, #005a96 100%);
+            color: var(--dove-white);
+            border: none;
+            padding: 18px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 6px 20px rgba(0, 73, 126, 0.4);
+        }
+
+        .btn-buy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 73, 126, 0.5);
+        }
+
+        .btn-buy:active {
+            transform: translateY(0);
+        }
+
+        /* Enlace reinicio */
+        .restart-link {
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .restart-link:hover {
+            color: var(--dove-blue);
+        }
+
+        /* ============================================
+           RESPONSIVE DENTRO DEL BANNER
+           ============================================ */
+        @media (max-height: 580px) {
+            .intro-tagline {
+                font-size: 22px;
+            }
+            .app-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ==========================================
+         CONTENEDOR PRINCIPAL DEL BANNER 300x600
+         ========================================== -->
+    <div class="banner-container">
+        
+        <!-- ======================================
+             ESTADO 1: INTRO CON VIDEO LOOP
+             ====================================== -->
+        <div id="state-intro" class="state state-intro active">
+            
+            <!-- Video de fondo (cambiar src por el archivo real) -->
+            <video 
+                class="video-background" 
+                autoplay 
+                loop 
+                muted 
+                playsinline
+                poster=""
+            >
+                <source src="Video_Generation_Radiant_Skin_Close_Up.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Fallback: Placeholder visual mientras no hay video -->
+            <!-- <div class="video-placeholder"></div> -->
+            
+            <!-- Overlay gradiente para legibilidad del texto -->
+            <div class="intro-overlay"></div>
+            
+            <!-- Contenido principal del Intro -->
+            <div class="intro-content">
+                <h1 class="intro-tagline">
+                    ¿Qué dice <strong>tu piel</strong> hoy?
+                </h1>
+                <button id="btn-start-diagnosis" class="btn-primary">
+                    Diagnóstico AI Gratuito
+                </button>
+            </div>
+            
+            <!-- Footer con créditos -->
+            <div class="intro-footer">
+                <p class="powered-by">Powered by N3Ad Lab</p>
+            </div>
+        </div>
+
+        <!-- ======================================
+             ESTADO 2: INTERACCIÓN / SIMULACIÓN APP
+             ====================================== -->
+        <div id="state-app" class="state state-app">
+            
+            <!-- Header con logo y botón cerrar -->
+            <header class="app-header">
+                <div class="dove-logo">Dove<span>®</span></div>
+                <button id="btn-close-app" class="btn-close" aria-label="Cerrar">✕</button>
+            </header>
+            
+            <!-- Contenido principal -->
+            <div class="app-content">
+                <h2 class="app-title">Analizador Facial AI</h2>
+                <p class="app-subtitle">
+                    Descubre el estado real de tu piel con nuestra tecnología de inteligencia artificial
+                </p>
+                
+                <!-- Botones de acción -->
+                <div class="action-buttons">
+                    <button id="btn-use-camera" class="btn-action btn-action-primary">
+                        <span class="btn-icon">📷</span>
+                        Usar Cámara
+                    </button>
+                    
+                    <div class="separator">O</div>
+                    
+                    <button id="btn-upload-photo" class="btn-action btn-action-secondary">
+                        <span class="btn-icon">🖼️</span>
+                        Subir Foto
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Footer con texto legal -->
+            <footer class="app-footer">
+                <p class="legal-text">
+                    Tus fotos son procesadas de forma segura y no se almacenan. 
+                    Consulta nuestra política de privacidad.
+                </p>
+            </footer>
+            
+            <!-- Overlay de escaneo -->
+            <div id="scanning-overlay" class="scanning-overlay">
+                <div class="scanning-animation"></div>
+                <p class="scanning-text">Escaneando<span class="scanning-dots"></span></p>
+            </div>
+        </div>
+
+        <!-- ======================================
+             ESTADO 3: RESULTADOS / CONVERSIÓN
+             ====================================== -->
+        <div id="state-results" class="state state-results">
+            
+            <!-- Header de resultados -->
+            <header class="results-header">
+                <h2>Resultado de tu Análisis</h2>
+            </header>
+            
+            <!-- Contenido de resultados -->
+            <div class="results-content">
+                
+                <!-- Card de diagnóstico -->
+                <div class="diagnosis-card">
+                    <div class="diagnosis-icon">💧</div>
+                    <p class="diagnosis-title">Tu piel indica</p>
+                    <p class="diagnosis-result">Tendencia a Deshidratación Leve</p>
+                </div>
+                
+                <!-- Producto recomendado -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <span>📦<br>Producto</span>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-badge">Recomendado</span>
+                        <h3 class="product-name">Dove DermaSeries</h3>
+                        <p class="product-description">Crema hidratante intensiva para pieles sensibles</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTA de compra -->
+            <div class="results-cta">
+                <button id="btn-buy-now" class="btn-buy">
+                    Comprar Ahora
+                </button>
+                <a id="btn-restart" class="restart-link">← Volver a empezar</a>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- ==========================================
+         JAVASCRIPT - LÓGICA DE INTERACCIÓN
+         ========================================== -->
+    <script>
+        /**
+         * Banner Rich Media Interactivo - Dove AI Skin Diagnosis
+         * Desarrollado para N3Ad Lab
+         * 
+         * Estados:
+         * 1. Intro - Video loop con CTA principal
+         * 2. App - Simulación de interfaz de escaneo
+         * 3. Resultados - Diagnóstico y producto recomendado
+         */
+
+        // ==========================================
+        // ELEMENTOS DEL DOM
+        // ==========================================
+        const stateIntro = document.getElementById('state-intro');
+        const stateApp = document.getElementById('state-app');
+        const stateResults = document.getElementById('state-results');
+        const scanningOverlay = document.getElementById('scanning-overlay');
+        
+        const btnStartDiagnosis = document.getElementById('btn-start-diagnosis');
+        const btnCloseApp = document.getElementById('btn-close-app');
+        const btnUseCamera = document.getElementById('btn-use-camera');
+        const btnUploadPhoto = document.getElementById('btn-upload-photo');
+        const btnBuyNow = document.getElementById('btn-buy-now');
+        const btnRestart = document.getElementById('btn-restart');
+
+        // ==========================================
+        // FUNCIONES DE NAVEGACIÓN ENTRE ESTADOS
+        // ==========================================
+
+        /**
+         * Cambia el estado activo del banner
+         * @param {HTMLElement} targetState - El estado destino
+         */
+        function navigateTo(targetState) {
+            // Remover clase active de todos los estados
+            document.querySelectorAll('.state').forEach(state => {
+                state.classList.remove('active');
+            });
+            
+            // Activar el estado objetivo
+            targetState.classList.add('active');
+        }
+
+        /**
+         * Muestra el overlay de escaneo y luego navega a resultados
+         */
+        function startScanning() {
+            // Mostrar overlay de escaneo
+            scanningOverlay.classList.add('active');
+            
+            // Después de 2 segundos, ir a resultados
+            setTimeout(() => {
+                scanningOverlay.classList.remove('active');
+                navigateTo(stateResults);
+            }, 2000);
+        }
+
+        /**
+         * Reinicia el banner al estado inicial
+         */
+        function resetBanner() {
+            navigateTo(stateIntro);
+        }
+
+        /**
+         * Abre el enlace de compra en una nueva ventana
+         */
+        function openPurchaseLink() {
+            // URL de ejemplo - reemplazar con el enlace real
+            const purchaseUrl = 'https://www.dove.com/es/productos.html';
+            window.open(purchaseUrl, '_blank');
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+
+        // Estado 1 → Estado 2
+        btnStartDiagnosis.addEventListener('click', () => {
+            navigateTo(stateApp);
+        });
+
+        // Cerrar app (Estado 2 → Estado 1)
+        btnCloseApp.addEventListener('click', resetBanner);
+
+        // Usar cámara (Estado 2 → Scanning → Estado 3)
+        btnUseCamera.addEventListener('click', startScanning);
+
+        // Subir foto (mismo comportamiento para el demo)
+        btnUploadPhoto.addEventListener('click', startScanning);
+
+        // Comprar ahora
+        btnBuyNow.addEventListener('click', openPurchaseLink);
+
+        // Volver a empezar
+        btnRestart.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetBanner();
+        });
+
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+        console.log('🕊️ Dove AI Skin Diagnosis Banner - Initialized');
+        console.log('📐 Dimensions: 300x600px');
+        console.log('⚡ Powered by N3Ad Lab');
+    </script>
+</body>
+</html>
+
