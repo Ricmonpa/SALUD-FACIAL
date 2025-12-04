@@ -22,3 +22,8 @@ npm-debug.log*
 *.tmp
 *.temp
 
+# Node modules (no necesarios para proyecto estático)
+node_modules/
+package.json
+package-lock.json
+
