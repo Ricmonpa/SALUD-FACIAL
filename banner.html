@@ -1022,14 +1022,42 @@ IMPORTANTE:
             };
 
             try {
-                const response = await fetch(
+                // Probar diferentes modelos y endpoints
+                const endpoints = [
                     `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-                    {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(requestBody)
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+                    `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`
+                ];
+                
+                let response;
+                let lastError;
+                
+                for (const endpoint of endpoints) {
+                    try {
+                        console.log(`🔄 Intentando endpoint: ${endpoint.split('/models/')[1].split(':')[0]}`);
+                        response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(requestBody)
+                        });
+                        
+                        if (response.ok) {
+                            console.log('✅ Endpoint funcionó!');
+                            break;
+                        } else {
+                            console.log(`⚠️ Endpoint falló con status: ${response.status}`);
+                            lastError = new Error(`API Error: ${response.status}`);
+                        }
+                    } catch (err) {
+                        console.log(`⚠️ Error en endpoint: ${err.message}`);
+                        lastError = err;
+                        continue;
                     }
-                );
+                }
+                
+                if (!response || !response.ok) {
+                    throw lastError || new Error('Todos los endpoints fallaron');
+                }
 
                 if (!response.ok) {
                     throw new Error(`API Error: ${response.status}`);
