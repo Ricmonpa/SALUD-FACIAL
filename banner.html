@@ -1022,43 +1022,23 @@ IMPORTANTE:
             };
 
             try {
-                // Probar diferentes modelos con soporte de visión (nombres correctos 2024)
-                const endpoints = [
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`,
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
-                    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`
-                ];
+                // Usar modelo gemini-1.5-flash (confirmado funcionando)
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
                 
-                let response;
-                let lastError;
+                console.log('🔄 Conectando con Gemini AI...');
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
                 
-                for (const endpoint of endpoints) {
-                    try {
-                        console.log(`🔄 Intentando endpoint: ${endpoint.split('/models/')[1].split(':')[0]}`);
-                        response = await fetch(endpoint, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(requestBody)
-                        });
-                        
-                        if (response.ok) {
-                            console.log('✅ Endpoint funcionó!');
-                            break;
-                        } else {
-                            console.log(`⚠️ Endpoint falló con status: ${response.status}`);
-                            lastError = new Error(`API Error: ${response.status}`);
-                        }
-                    } catch (err) {
-                        console.log(`⚠️ Error en endpoint: ${err.message}`);
-                        lastError = err;
-                        continue;
-                    }
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('❌ Error de API:', response.status, errorData);
+                    throw new Error(`API Error: ${response.status}`);
                 }
                 
-                if (!response || !response.ok) {
-                    throw lastError || new Error('Todos los endpoints fallaron');
-                }
+                console.log('✅ Respuesta recibida de Gemini');
 
                 if (!response.ok) {
                     throw new Error(`API Error: ${response.status}`);
