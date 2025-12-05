@@ -1079,20 +1079,9 @@ IMPORTANTE:
                 return analysis;
                 
             } catch (error) {
-                console.error('Error analyzing with Gemini:', error);
-                
-                // Fallback: usar resultado por defecto
-                return {
-                    tipo_piel: "Normal",
-                    nivel_hidratacion: "Moderadamente hidratada",
-                    diagnostico_principal: "Tendencia a Deshidratación Leve",
-                    caracteristicas: [
-                        "Textura suave con algunas zonas secas",
-                        "Necesita hidratación profunda"
-                    ],
-                    producto_recomendado: "Dove DermaSeries",
-                    descripcion_producto: "Crema hidratante intensiva para pieles sensibles"
-                };
+                console.error('❌ Error analyzing with Gemini:', error);
+                // Sin fallback - lanzar error para que el usuario sepa que falló
+                throw error;
             }
         }
 
@@ -1163,7 +1152,7 @@ IMPORTANTE:
             } catch (error) {
                 console.error('❌ Error:', error);
                 hideOverlay();
-                alert('Hubo un problema al analizar tu foto. Por favor intenta de nuevo.');
+                alert('⚠️ El servicio de análisis no está disponible en este momento.\n\nPor favor intenta más tarde.\n\nSi el problema persiste, contacta al soporte.');
             }
         }
 
