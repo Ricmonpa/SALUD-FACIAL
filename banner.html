@@ -1022,23 +1022,40 @@ IMPORTANTE:
             };
 
             try {
-                // Usar modelo gemini-1.5-flash (confirmado funcionando)
-                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                // Lista de modelos a probar (en orden de preferencia)
+                const models = [
+                    'gemini-2.0-flash-exp',
+                    'gemini-1.5-flash',
+                    'gemini-1.5-pro',
+                    'gemini-pro-vision'
+                ];
                 
-                console.log('🔄 Conectando con Gemini AI...');
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestBody)
-                });
+                let response;
+                let successModel = null;
                 
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    console.error('❌ Error de API:', response.status, errorData);
-                    throw new Error(`API Error: ${response.status}`);
+                for (const model of models) {
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+                    
+                    try {
+                        response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(requestBody)
+                        });
+                        
+                        if (response.ok) {
+                            successModel = model;
+                            console.log(`✅ Modelo funcionó: ${model}`);
+                            break;
+                        }
+                    } catch (err) {
+                        continue;
+                    }
                 }
                 
-                console.log('✅ Respuesta recibida de Gemini');
+                if (!response || !response.ok) {
+                    throw new Error('Ningún modelo disponible');
+                }
 
                 if (!response.ok) {
                     throw new Error(`API Error: ${response.status}`);
