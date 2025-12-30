@@ -372,7 +372,7 @@
         }
 
         /* ============================================
-           OVERLAY DE ESCANEO
+           OVERLAY DE ESCANEO MEJORADO
            ============================================ */
         .scanning-overlay {
             position: absolute;
@@ -381,15 +381,11 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 73, 126, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
             opacity: 0;
             visibility: hidden;
             transition: all 0.4s ease;
             z-index: 10;
+            overflow: hidden;
         }
 
         .scanning-overlay.active {
@@ -397,58 +393,256 @@
             visibility: visible;
         }
 
-        .scanning-animation {
-            width: 80px;
-            height: 80px;
+        .overlay-content {
             position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .scanning-animation::before,
-        .scanning-animation::after {
-            content: '';
+        /* Imagen de fondo durante análisis */
+        .analysis-background {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: var(--dove-white);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(8px) brightness(0.4);
+            z-index: 1;
         }
 
-        .scanning-animation::before {
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
+        /* Contenedor principal del análisis */
+        .analysis-container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 30px 20px;
+            width: 100%;
         }
 
-        .scanning-animation::after {
-            width: 40px;
-            height: 40px;
-            animation: spin 0.8s linear infinite reverse;
+        /* ============================================
+           FASE 1: EFECTO DE ESCANEO
+           ============================================ */
+        .scan-box {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 25px;
+            border: 3px solid rgba(0, 162, 221, 0.6);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 162, 221, 0.3);
         }
 
-        @keyframes spin {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+        /* Líneas de escaneo animadas */
+        .scan-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
 
-        .scanning-text {
-            color: var(--dove-white);
-            font-size: 16px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 162, 221, 0.8),
+                rgba(255, 255, 255, 0.9),
+                rgba(0, 162, 221, 0.8),
+                transparent
+            );
+            box-shadow: 0 0 10px rgba(0, 162, 221, 0.8);
+            animation: scanMove 2s linear infinite;
         }
 
-        .scanning-dots::after {
-            content: '';
-            animation: dots 1.5s steps(4, end) infinite;
+        @keyframes scanMove {
+            0% {
+                top: -10%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
         }
 
-        @keyframes dots {
-            0% { content: ''; }
-            25% { content: '.'; }
-            50% { content: '..'; }
-            75% { content: '...'; }
-            100% { content: ''; }
+        /* Esquinas del marco de escaneo */
+        .scan-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #00a2dd;
+        }
+
+        .scan-corner.top-left {
+            top: -3px;
+            left: -3px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .scan-corner.top-right {
+            top: -3px;
+            right: -3px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .scan-corner.bottom-left {
+            bottom: -3px;
+            left: -3px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .scan-corner.bottom-right {
+            bottom: -3px;
+            right: -3px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .scan-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #00a2dd;
+            margin-top: 15px;
+            text-shadow: 0 0 10px rgba(0, 162, 221, 0.5);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* ============================================
+           FASE 2: PROGRESO CON MÉTRICAS
+           ============================================ */
+        .progress-container {
+            width: 100%;
+            max-width: 260px;
+            margin: 0 auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                #00a2dd,
+                #0084ff,
+                #00a2dd
+            );
+            background-size: 200% 100%;
+            border-radius: 10px;
+            transition: width 3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: shimmer 2s linear infinite;
+            box-shadow: 0 0 10px rgba(0, 162, 221, 0.5);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .progress-percentage {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin: 10px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .analysis-message {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin: 20px 0;
+            min-height: 45px;
+            line-height: 1.4;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: messageFade 0.8s ease-in-out;
+        }
+
+        @keyframes messageFade {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Badges de tecnología */
+        .analysis-metrics {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .metric {
+            font-size: 11px;
+            color: white;
+            background: rgba(0, 162, 221, 0.25);
+            backdrop-filter: blur(10px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 162, 221, 0.4);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animación de entrada suave */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* ============================================
@@ -1117,6 +1311,115 @@ IMPORTANTE:
             console.log('✅ Análisis completado:', analysis);
         }
 
+        // ==========================================
+        // ANÁLISIS MEJORADO CON 2 FASES
+        // ==========================================
+        const analysisMessages = [
+            "Analizando 47 parámetros con IA dermatológica",
+            "Procesando 2.3M de datos cutáneos",
+            "Evaluando hidratación epidérmica",
+            "Detectando microestructura y textura",
+            "Tecnología Gemini evaluando tu piel",
+            "Comparando con base científica global"
+        ];
+
+        let messageInterval;
+        let progressInterval;
+
+
+        /**
+         * FASE 1: Efecto de escaneo visual
+         * @param {HTMLElement} overlay - Elemento overlay
+         * @param {string} imageDataURL - URL de la imagen
+         */
+        function showScanPhase(overlay, imageDataURL) {
+            const scanHTML = `
+                <div class="overlay-content fade-in">
+                    <img src="${imageDataURL}" class="analysis-background" alt="Tu rostro">
+                    <div class="analysis-container">
+                        <div class="scan-box">
+                            <div class="scan-lines">
+                                <div class="scan-line"></div>
+                            </div>
+                            <div class="scan-corner top-left"></div>
+                            <div class="scan-corner top-right"></div>
+                            <div class="scan-corner bottom-left"></div>
+                            <div class="scan-corner bottom-right"></div>
+                        </div>
+                        <p class="scan-text">Escaneando características faciales...</p>
+                    </div>
+                </div>
+            `;
+            
+            overlay.innerHTML = scanHTML;
+            overlay.classList.add('active');
+        }
+
+        /**
+         * FASE 2: Progreso con métricas científicas
+         * @param {HTMLElement} overlay - Elemento overlay
+         * @param {string} imageDataURL - URL de la imagen
+         */
+        function showProgressPhase(overlay, imageDataURL) {
+            const progressHTML = `
+                <div class="overlay-content fade-in">
+                    <img src="${imageDataURL}" class="analysis-background" alt="Tu rostro">
+                    <div class="analysis-container">
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <p class="progress-percentage">0%</p>
+                            <p class="analysis-message">${analysisMessages[0]}</p>
+                            <div class="analysis-metrics">
+                                <span class="metric">🔬 Análisis IA Activo</span>
+                                <span class="metric">⚡ Gemini Vision</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            overlay.innerHTML = progressHTML;
+            
+            // Animar barra de progreso
+            setTimeout(() => {
+                const progressFill = overlay.querySelector('.progress-fill');
+                const progressText = overlay.querySelector('.progress-percentage');
+                
+                if (progressFill && progressText) {
+                    progressFill.style.width = '100%';
+                    
+                    // Actualizar porcentaje
+                    let progress = 0;
+                    progressInterval = setInterval(() => {
+                        progress += 2;
+                        if (progress <= 100) {
+                            progressText.textContent = progress + '%';
+                        } else {
+                            clearInterval(progressInterval);
+                        }
+                    }, 60); // 3 segundos para llegar a 100%
+                }
+            }, 100);
+            
+            // Rotar mensajes científicos
+            let currentIndex = 0;
+            messageInterval = setInterval(() => {
+                currentIndex++;
+                if (currentIndex < analysisMessages.length) {
+                    const messageEl = overlay.querySelector('.analysis-message');
+                    if (messageEl) {
+                        messageEl.style.animation = 'none';
+                        setTimeout(() => {
+                            messageEl.textContent = analysisMessages[currentIndex];
+                            messageEl.style.animation = 'messageFade 0.8s ease-in-out';
+                        }, 50);
+                    }
+                }
+            }, 800);
+        }
+
         /**
          * Procesa una imagen capturada/subida
          * @param {File} file - Archivo de imagen
@@ -1124,33 +1427,75 @@ IMPORTANTE:
         async function processImage(file) {
             if (!file) return;
 
-            showOverlay(); // Mostrar overlay "Escaneando..."
-            
             try {
                 console.log('📸 Procesando imagen...');
                 
-                // Convertir imagen a Base64
+                // Convertir archivo a data URL para mostrar en overlay
+                const imageDataURL = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+                
+                // Convertir a Base64 para la API
                 const base64Image = await fileToBase64(file);
                 console.log('🔄 Imagen convertida a Base64');
                 
-                // Analizar con Gemini
-                console.log('🤖 Analizando con Gemini AI...');
-                const analysis = await analyzeSkinWithGemini(base64Image);
-                
-                // Actualizar resultados con datos reales
-                updateResultsWithAnalysis(analysis);
-                
-                // Esperar un momento antes de mostrar resultados (para UX)
-                setTimeout(() => {
-                    hideOverlay();
-                    navigateTo(stateResults);
-                }, 1000);
+                // Mostrar análisis mejorado con imagen de fondo
+                // La función showEnhancedAnalysis maneja la llamada a la API
+                showEnhancedAnalysisWithBase64(imageDataURL, base64Image);
                 
             } catch (error) {
                 console.error('❌ Error:', error);
                 hideOverlay();
                 alert('⚠️ El servicio de análisis no está disponible en este momento.\n\nPor favor intenta más tarde.\n\nSi el problema persiste, contacta al soporte.');
             }
+        }
+
+        /**
+         * Muestra análisis mejorado con 2 fases (versión con base64)
+         * @param {string} imageDataURL - URL de la imagen para mostrar (data URL)
+         * @param {string} base64Image - Imagen en Base64 para la API
+         */
+        function showEnhancedAnalysisWithBase64(imageDataURL, base64Image) {
+            const overlay = scanningOverlay;
+            
+            // FASE 1: Escaneo visual (2.5 segundos)
+            showScanPhase(overlay, imageDataURL);
+            
+            // Iniciar llamada a API
+            const startTime = Date.now();
+            const MIN_TOTAL_TIME = 5500; // 5.5 segundos totales
+            
+            console.log('🤖 Analizando con Gemini AI...');
+            
+            analyzeSkinWithGemini(base64Image)
+                .then(result => {
+                    const elapsed = Date.now() - startTime;
+                    const remaining = Math.max(0, MIN_TOTAL_TIME - elapsed);
+                    
+                    setTimeout(() => {
+                        clearInterval(messageInterval);
+                        clearInterval(progressInterval);
+                        updateResultsWithAnalysis(result);
+                        hideOverlay();
+                        navigateTo(stateResults);
+                    }, remaining);
+                })
+                .catch(error => {
+                    clearInterval(messageInterval);
+                    clearInterval(progressInterval);
+                    setTimeout(() => {
+                        hideOverlay();
+                        alert('⚠️ El servicio de análisis no está disponible en este momento.\n\nPor favor intenta más tarde.\n\nSi el problema persiste, contacta al soporte.');
+                    }, MIN_TOTAL_TIME);
+                });
+            
+            // Después de 2.5s, cambiar a FASE 2: Progreso con métricas
+            setTimeout(() => {
+                showProgressPhase(overlay, imageDataURL);
+            }, 2500);
         }
 
         // ==========================================
