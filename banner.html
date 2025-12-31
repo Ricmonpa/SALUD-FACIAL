@@ -1517,9 +1517,34 @@ IMPORTANTE:
 
         cameraInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            await processImage(file);
-            // Limpiar input para permitir múltiples capturas
-            e.target.value = '';
+            
+            // Validar que se capturó un archivo
+            if (!file) {
+                console.warn('⚠️ No se capturó archivo de cámara');
+                return;
+            }
+            
+            // Validar que es una imagen
+            if (!file.type.startsWith('image/')) {
+                console.error('❌ Archivo no es una imagen:', file.type);
+                alert('El archivo capturado no es una imagen válida.');
+                e.target.value = '';
+                return;
+            }
+            
+            console.log('📷 Archivo capturado:', file.name, file.type, file.size, 'bytes');
+            
+            try {
+                await processImage(file);
+            } catch (error) {
+                console.error('❌ Error procesando foto de cámara:', error);
+                alert('Error al procesar la foto. Por favor intenta de nuevo.');
+            } finally {
+                // Limpiar input después de procesar (con delay para evitar problemas)
+                setTimeout(() => {
+                    e.target.value = '';
+                }, 100);
+            }
         });
 
         // Subir foto (Estado 2 → Upload → Análisis IA → Estado 3)
@@ -1529,9 +1554,34 @@ IMPORTANTE:
 
         uploadInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            await processImage(file);
-            // Limpiar input para permitir múltiples uploads
-            e.target.value = '';
+            
+            // Validar que se seleccionó un archivo
+            if (!file) {
+                console.warn('⚠️ No se seleccionó archivo');
+                return;
+            }
+            
+            // Validar que es una imagen
+            if (!file.type.startsWith('image/')) {
+                console.error('❌ Archivo no es una imagen:', file.type);
+                alert('Por favor selecciona una imagen válida.');
+                e.target.value = '';
+                return;
+            }
+            
+            console.log('📁 Archivo seleccionado:', file.name, file.type, file.size, 'bytes');
+            
+            try {
+                await processImage(file);
+            } catch (error) {
+                console.error('❌ Error procesando foto subida:', error);
+                alert('Error al procesar la imagen. Por favor intenta de nuevo.');
+            } finally {
+                // Limpiar input después de procesar (con delay para evitar problemas)
+                setTimeout(() => {
+                    e.target.value = '';
+                }, 100);
+            }
         });
 
         // Comprar ahora
