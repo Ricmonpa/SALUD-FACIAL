@@ -8,8 +8,9 @@
 
 // ==========================================
 // CONFIGURACIÓN
+// La API key está en el servidor (Cloudflare Function) - NUNCA en el cliente
 // ==========================================
-const GEMINI_API_KEY = 'AIzaSyAYlxMeR830ctfqNdlPRt5ruAgEkvv5hLM';
+const API_PROXY_URL = '/api/analyze';
 const API_TIMEOUT_MS = 30000;
 const API_RETRY_COUNT = 2;
 const API_RETRY_DELAYS = [2000, 4000]; // backoff en ms
@@ -393,25 +394,9 @@ async function compressImageToTarget(file) {
 // ==========================================
 
 async function analyzeSkinWithGemini(imageBase64, attemptNumber = 1, onRetryMessage) {
-    const model = 'gemini-2.5-flash';
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
-
     const requestBody = {
-        contents: [{
-            parts: [
-                { text: COSMETOLOGIST_PROMPT },
-                {
-                    inline_data: {
-                        mime_type: 'image/jpeg',
-                        data: imageBase64
-                    }
-                }
-            ]
-        }],
-        generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 500
-        }
+        imageBase64,
+        prompt: COSMETOLOGIST_PROMPT
     };
 
     const controller = new AbortController();
@@ -420,9 +405,9 @@ async function analyzeSkinWithGemini(imageBase64, attemptNumber = 1, onRetryMess
     const startTime = Date.now();
 
     try {
-        log('🤖', `API Gemini - Intento ${attemptNumber}/${API_RETRY_COUNT + 1}`);
+        log('🤖', `API Gemini (proxy) - Intento ${attemptNumber}/${API_RETRY_COUNT + 1}`);
 
-        const response = await fetch(endpoint, {
+        const response = await fetch(API_PROXY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestBody),

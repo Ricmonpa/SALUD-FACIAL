@@ -27,3 +27,9 @@ node_modules/
 package.json
 package-lock.json
 
+# Secretos locales - NUNCA subir a git
+.dev.vars
+.env
+.env.local
+.env.*.local
+

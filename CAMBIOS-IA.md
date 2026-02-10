@@ -28,7 +28,7 @@
 
 #### 1. Configuración de Gemini API
 ```javascript
-const GEMINI_API_KEY = 'AIzaSyAEF3_t-6vrKN0mAlHSf03c9QQLue3l3zI';
+const GEMINI_API_KEY = '[configurada en Cloudflare - ver SETUP-API-KEY.md]';
 const COSMETOLOGIST_PROMPT = '...'; // Prompt profesional de cosmetología
 ```
 
