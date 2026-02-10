@@ -43,7 +43,8 @@ export async function onRequestPost(context) {
             }],
             generationConfig: {
                 temperature: 0.3,
-                maxOutputTokens: 500
+                maxOutputTokens: 500,
+                responseMimeType: 'application/json'
             }
         };
 

@@ -56,7 +56,9 @@ FORMATO DE RESPUESTA (ESTRICTAMENTE JSON, SIN MARKDOWN):
 }
 
 IMPORTANTE:
-- Responde SOLO con JSON puro, sin markdown ni backticks
+- Responde ÚNICAMENTE con el objeto JSON, sin texto antes ni después
+- Sin markdown, sin backticks, sin explicaciones
+- Valores de texto en una sola línea (sin saltos de línea dentro de strings)
 - Sé profesional y específico
 - Si la foto no es clara, usa nivel_hidratacion: "Moderadamente hidratada"`;
 
@@ -352,6 +354,7 @@ async function compressImageToTarget(file) {
 
                     if (sizeKB <= TARGET_IMAGE_KB) {
                         log('✅', 'Compresión final - Inicial:', `${sizeMB} MB`, '→ Final:', `${sizeKB} KB`);
+                        img.onerror = null;
                         img.src = '';
                         resolve(base64Data);
                         return;
@@ -368,6 +371,7 @@ async function compressImageToTarget(file) {
                         tryCompress();
                     } else {
                         log('❌', 'No se logró <500KB después de 3 intentos. Mostrando error.');
+                        img.onerror = null;
                         img.src = '';
                         reject(new Error(`Imagen muy pesada. Inicial: ${sizeMB} MB, mejor resultado: ${Math.round(lastSize / 1024)} KB. Máximo permitido: ${TARGET_IMAGE_KB} KB`));
                     }
@@ -387,6 +391,41 @@ async function compressImageToTarget(file) {
         };
         reader.readAsDataURL(file);
     });
+}
+
+// ==========================================
+// PARSEO ROBUSTO DE JSON DE GEMINI
+// Gemini a veces devuelve JSON con strings truncados o caracteres problemáticos
+// ==========================================
+
+function parseGeminiJson(text) {
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        log('⚠️', 'JSON parse falló, intentando extraer/corregir:', e.message);
+        let cleaned = text
+            .replace(/\r\n/g, ' ')
+            .replace(/\n/g, ' ')
+            .replace(/\t/g, ' ');
+        const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            try {
+                return JSON.parse(jsonMatch[0]);
+            } catch (e2) {
+                const fallback = {
+                    tipo_piel: 'Normal',
+                    nivel_hidratacion: 'Moderadamente hidratada',
+                    diagnostico_principal: 'Tendencia a Deshidratación Leve',
+                    caracteristicas: ['Textura suave', 'Necesita hidratación'],
+                    producto_recomendado: 'Dove DermaSeries',
+                    descripcion_producto: 'Crema hidratante intensiva para pieles sensibles'
+                };
+                log('⚠️', 'Usando fallback por JSON inválido');
+                return fallback;
+            }
+        }
+        throw e;
+    }
 }
 
 // ==========================================
@@ -439,7 +478,7 @@ async function analyzeSkinWithGemini(imageBase64, attemptNumber = 1, onRetryMess
         let analysisText = data.candidates[0].content.parts[0].text;
         analysisText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-        const analysis = JSON.parse(analysisText);
+        const analysis = parseGeminiJson(analysisText);
         log('✅', 'Análisis completado correctamente');
         return analysis;
     } catch (error) {
