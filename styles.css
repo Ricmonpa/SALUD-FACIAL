@@ -1,0 +1,859 @@
+/* ============================================
+   DOVE AI SKIN DIAGNOSIS - BANNER 300×600
+   Estilos principales + Overlay de error + Botón reintentar
+   ============================================ */
+
+/* ============================================
+   VARIABLES CSS - PALETA DOVE
+   ============================================ */
+:root {
+    --dove-white: #FFFFFF;
+    --dove-blue: #00497E;
+    --dove-blue-hover: #003a65;
+    --dove-gray: #F0F0F0;
+    --dove-gray-dark: #E0E0E0;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --text-muted: #999999;
+    --error-red: #c0392b;
+    --error-red-light: #fdeaea;
+}
+
+/* ============================================
+   RESET Y BASE
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL DEL BANNER
+   ============================================ */
+.banner-container {
+    width: 300px;
+    height: 600px;
+    position: relative;
+    overflow: hidden;
+    background: var(--dove-white);
+    border-radius: 12px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   ESTADOS - SISTEMA DE TRANSICIONES
+   ============================================ */
+.state {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.state.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ============================================
+   ESTADO 1: INTRO CON VIDEO
+   ============================================ */
+.state-intro {
+    background: #000;
+}
+
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        #f8e1d4 0%,
+        #f5d4c6 30%,
+        #e8c4b8 60%,
+        #d4a99a 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-placeholder::before {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.3); opacity: 0.8; }
+}
+
+.intro-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.85) 0%,
+        rgba(0, 0, 0, 0.5) 40%,
+        transparent 100%
+    );
+    pointer-events: none;
+}
+
+.intro-content {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px;
+    text-align: center;
+}
+
+.intro-tagline {
+    color: var(--dove-white);
+    font-size: 26px;
+    font-weight: 300;
+    line-height: 1.3;
+    margin-bottom: 24px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.intro-tagline strong {
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: var(--dove-blue);
+    color: var(--dove-white);
+    border: none;
+    padding: 16px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 73, 126, 0.4);
+    text-transform: none;
+    letter-spacing: 0.3px;
+}
+
+.btn-primary:hover {
+    background: var(--dove-blue-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 73, 126, 0.5);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.intro-footer {
+    position: relative;
+    z-index: 2;
+    padding: 16px;
+    text-align: center;
+}
+
+.powered-by {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   ESTADO 2: INTERACCIÓN / APP
+   ============================================ */
+.state-app {
+    background: var(--dove-white);
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--dove-gray);
+}
+
+.dove-logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--dove-blue);
+    letter-spacing: -0.5px;
+}
+
+.dove-logo span {
+    font-weight: 300;
+}
+
+.btn-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--dove-gray);
+    color: var(--text-light);
+    font-size: 18px;
+    font-weight: 300;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+}
+
+.btn-close:hover {
+    background: var(--dove-gray-dark);
+    color: var(--text-dark);
+}
+
+.app-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    gap: 20px;
+}
+
+.app-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+.app-subtitle {
+    font-size: 14px;
+    color: var(--text-light);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 24px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-action-primary {
+    background: var(--dove-blue);
+    color: var(--dove-white);
+    box-shadow: 0 4px 12px rgba(0, 73, 126, 0.3);
+}
+
+.btn-action-primary:hover {
+    background: var(--dove-blue-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 73, 126, 0.4);
+}
+
+.btn-action-secondary {
+    background: var(--dove-gray);
+    color: var(--text-dark);
+    border: 2px solid var(--dove-gray-dark);
+}
+
+.btn-action-secondary:hover {
+    background: var(--dove-gray-dark);
+    border-color: #ccc;
+}
+
+.btn-icon {
+    font-size: 20px;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.separator::before,
+.separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--dove-gray-dark);
+}
+
+.app-footer {
+    padding: 16px 24px;
+    text-align: center;
+    border-top: 1px solid var(--dove-gray);
+}
+
+.legal-text {
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* ============================================
+   OVERLAY DE ESCANEO
+   ============================================ */
+.scanning-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 73, 126, 0.95);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.scanning-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.overlay-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.analysis-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(8px) brightness(0.4);
+    z-index: 1;
+}
+
+.analysis-container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 30px 20px;
+    width: 100%;
+}
+
+.scan-box {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 25px;
+    border: 3px solid rgba(0, 162, 221, 0.6);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 162, 221, 0.3);
+}
+
+.scan-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 162, 221, 0.8),
+        rgba(255, 255, 255, 0.9),
+        rgba(0, 162, 221, 0.8),
+        transparent
+    );
+    box-shadow: 0 0 10px rgba(0, 162, 221, 0.8);
+    animation: scanMove 2s linear infinite;
+}
+
+@keyframes scanMove {
+    0% { top: -10%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 110%; opacity: 0; }
+}
+
+.scan-corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #00a2dd;
+}
+
+.scan-corner.top-left { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+.scan-corner.top-right { top: -3px; right: -3px; border-left: none; border-bottom: none; }
+.scan-corner.bottom-left { bottom: -3px; left: -3px; border-right: none; border-top: none; }
+.scan-corner.bottom-right { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+
+.scan-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #00a2dd;
+    margin-top: 15px;
+    text-shadow: 0 0 10px rgba(0, 162, 221, 0.5);
+    animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+.progress-container {
+    width: 100%;
+    max-width: 260px;
+    margin: 0 auto;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #00a2dd, #0084ff, #00a2dd);
+    background-size: 200% 100%;
+    border-radius: 10px;
+    transition: width 3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: shimmer 2s linear infinite;
+    box-shadow: 0 0 10px rgba(0, 162, 221, 0.5);
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.progress-percentage {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 10px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.analysis-message {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    margin: 20px 0;
+    min-height: 45px;
+    line-height: 1.4;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: messageFade 0.8s ease-in-out;
+}
+
+@keyframes messageFade {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.analysis-metrics {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.metric {
+    font-size: 11px;
+    color: white;
+    background: rgba(0, 162, 221, 0.25);
+    backdrop-filter: blur(10px);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    border: 1px solid rgba(0, 162, 221, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ============================================
+   ESTADO 3: RESULTADOS
+   ============================================ */
+.state-results {
+    background: var(--dove-white);
+}
+
+.results-header {
+    background: linear-gradient(135deg, var(--dove-blue) 0%, #005a96 100%);
+    padding: 20px;
+    text-align: center;
+}
+
+.results-header h2 {
+    color: var(--dove-white);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.results-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 20px;
+}
+
+.diagnosis-card {
+    background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    border: 1px solid rgba(0, 73, 126, 0.1);
+}
+
+.diagnosis-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    animation: droplet 2s ease-in-out infinite;
+}
+
+@keyframes droplet {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.diagnosis-title {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.diagnosis-result {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dove-blue);
+    line-height: 1.4;
+}
+
+.product-card {
+    background: var(--dove-gray);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.product-image {
+    width: 80px;
+    height: 100px;
+    background: var(--dove-white);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-badge {
+    display: inline-block;
+    background: var(--dove-blue);
+    color: var(--dove-white);
+    font-size: 9px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.product-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.product-description {
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.4;
+}
+
+.results-cta {
+    padding: 0 24px 24px;
+}
+
+.btn-buy {
+    width: 100%;
+    background: linear-gradient(135deg, var(--dove-blue) 0%, #005a96 100%);
+    color: var(--dove-white);
+    border: none;
+    padding: 18px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: 0 6px 20px rgba(0, 73, 126, 0.4);
+}
+
+.btn-buy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 73, 126, 0.5);
+}
+
+.btn-buy:active {
+    transform: translateY(0);
+}
+
+.restart-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.restart-link:hover {
+    color: var(--dove-blue);
+}
+
+/* ============================================
+   OVERLAY DE ERROR + BOTÓN REINTENTAR
+   ============================================ */
+.error-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 73, 126, 0.97);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.error-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.error-overlay-content {
+    background: var(--dove-white);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin: 20px;
+    max-width: 260px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.error-overlay-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+
+.error-overlay-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.error-overlay-message {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.error-overlay-technical {
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--error-red-light);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: left;
+    word-break: break-all;
+}
+
+.btn-retry {
+    width: 100%;
+    background: var(--dove-blue);
+    color: var(--dove-white);
+    border: none;
+    padding: 14px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-retry:hover {
+    background: var(--dove-blue-hover);
+    transform: translateY(-2px);
+}
+
+.btn-retry:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   VIDEO CAPTURE (getUserMedia) - Desktop
+   ============================================ */
+.video-capture-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 15;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.video-capture-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.video-capture-preview {
+    width: 260px;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 3px solid var(--dove-blue);
+    margin-bottom: 20px;
+}
+
+.video-capture-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.video-capture-buttons .btn-action {
+    padding: 14px 20px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-height: 580px) {
+    .intro-tagline { font-size: 22px; }
+    .app-title { font-size: 20px; }
+}
