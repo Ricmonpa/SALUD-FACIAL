@@ -393,7 +393,7 @@ async function compressImageToTarget(file) {
 // ==========================================
 
 async function analyzeSkinWithGemini(imageBase64, attemptNumber = 1, onRetryMessage) {
-    const model = 'gemini-1.5-flash';
+    const model = 'gemini-2.5-flash';
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
 
     const requestBody = {
